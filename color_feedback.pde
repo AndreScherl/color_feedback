@@ -8,9 +8,9 @@
 /* How it works (or should work)
  * 1. set colors to search for by picking it within the cam pic
  * 2. do the following for every color
- *  a) filter pic by color (hue)
+ *  a) filter pic by color (hue), convert hue value into grayscale value
  *  b) if pixel color is in range change it to white, if not make it black
- *  c) find contours and count them
+ *  c) find contours within the black and white image and count them
  * 3. show stats
  */
 
@@ -19,10 +19,12 @@ import gab.opencv.*;
 
 // Change parameters here
 int hue_tolerance = 20;
+int threshold = 40;
 
 Capture cam;                           // instance of the Capture class 
 OpenCV opencv;                         // instance of the OpenCV class
 color[] colors = new color[4];         // the colors you're looking for
+ArrayList<Contour> contours;
 
 
 void setup()
@@ -31,19 +33,30 @@ void setup()
   size(640, 480, P2D);
   cam = new Capture(this, width, height);
   opencv = new OpenCV(this, cam);
-  //opencv.threshold(75);
+  
   cam.start();
 }
 
 void draw(){
   image(cam, 0, 0);
   
-  //opencv.useColor(RGB);
+  opencv.useColor(RGB);
   opencv.loadImage(cam);
   opencv.useColor(HSB);
+  opencv.threshold(threshold);
   opencv.setGray(opencv.getH().clone());
   opencv.inRange(int((hue(colors[0])-hue_tolerance)/2), int((hue(colors[0])+hue_tolerance)/2)); // opencv hue range 0-180
   print("color-hue: ");println(int(hue(colors[0])-hue_tolerance));
+  
+  contours = opencv.findContours();
+  println("found " + contours.size() + " contours");
+  noFill();
+  strokeWeight(3);
+  
+  for (Contour contour : contours) {
+    stroke(0, 255, 0);
+    contour.draw();
+  }
   
   image(opencv.getInput(), 0*width/4, 3*height/4, width/4,height/4);
   image(opencv.getOutput(), 3*width/4, 3*height/4, width/4,height/4);
