@@ -19,7 +19,6 @@ import gab.opencv.*;
 
 // Change parameters here
 int hue_tolerance = 20;
-int threshold = 40;
 
 Capture cam;                           // instance of the Capture class 
 OpenCV opencv;                         // instance of the OpenCV class
@@ -43,7 +42,6 @@ void draw(){
   opencv.useColor(RGB);
   opencv.loadImage(cam);
   opencv.useColor(HSB);
-  opencv.threshold(threshold);
   opencv.setGray(opencv.getH().clone());
   opencv.inRange(int((hue(colors[0])-hue_tolerance)/2), int((hue(colors[0])+hue_tolerance)/2)); // opencv hue range 0-180
   print("color-hue: ");println(int(hue(colors[0])-hue_tolerance));
