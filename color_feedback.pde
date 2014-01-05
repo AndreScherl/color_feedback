@@ -4,13 +4,21 @@
  *  @author Andre Scherl
  *  @date 2014/01/03
  */
+ 
+/* How it works (or should work)
+ * 1. set colors to search for by picking it within the cam pic
+ * 2. do the following for every color
+ *  a) filter pic by color (hue)
+ *  b) if pixel color is in range change it to white, if not make it black
+ *  c) find contours and count them
+ * 3. show stats
+ */
 
 import processing.video.*;
 import gab.opencv.*;
-import java.awt.Color;
 
 // Change parameters here
-int hue_tolerance = 5;
+int hue_tolerance = 20;
 
 Capture cam;                           // instance of the Capture class 
 OpenCV opencv;                         // instance of the OpenCV class
@@ -23,18 +31,18 @@ void setup()
   size(640, 480, P2D);
   cam = new Capture(this, width, height);
   opencv = new OpenCV(this, cam);
-  //opencv.threshold(5);
+  //opencv.threshold(75);
   cam.start();
 }
 
 void draw(){
   image(cam, 0, 0);
   
-  opencv.useColor(RGB);
+  //opencv.useColor(RGB);
   opencv.loadImage(cam);
   opencv.useColor(HSB);
   opencv.setGray(opencv.getH().clone());
-  opencv.inRange(int(hue(colors[0])-hue_tolerance), int(hue(colors[0])+hue_tolerance));
+  opencv.inRange(int((hue(colors[0])-hue_tolerance)/2), int((hue(colors[0])+hue_tolerance)/2)); // opencv hue range 0-180
   print("color-hue: ");println(int(hue(colors[0])-hue_tolerance));
   
   image(opencv.getInput(), 0*width/4, 3*height/4, width/4,height/4);
