@@ -18,47 +18,44 @@ import processing.video.*;
 import gab.opencv.*;
 
 // Change parameters here
-int hue_tolerance = 20;
+int hue_tolerance = 50;
 
 Capture cam;                           // instance of the Capture class 
 OpenCV opencv;                         // instance of the OpenCV class
 color[] colors = new color[4];         // the colors you're looking for
 ArrayList<Contour> contours;
 
-
 void setup()
 {
-  //frameRate(2);
   size(640, 480, P2D);
   cam = new Capture(this, width, height);
   opencv = new OpenCV(this, cam);
-  
   cam.start();
+  colorMode(HSB, 360, 100, 100);
+  colors[0] = color(350, 100, 100);
 }
 
 void draw(){
   image(cam, 0, 0);
-  
   opencv.useColor(RGB);
   opencv.loadImage(cam);
   opencv.useColor(HSB);
   opencv.setGray(opencv.getH().clone());
   opencv.inRange(int((hue(colors[0])-hue_tolerance)/2), int((hue(colors[0])+hue_tolerance)/2)); // opencv hue range 0-180
-  print("color-hue: ");println(int(hue(colors[0])-hue_tolerance));
+  print("color-hue: ");println(int(hue(colors[0])));
+  PImage bw = opencv.getOutput();
   
   contours = opencv.findContours();
   println("found " + contours.size() + " contours");
   noFill();
   strokeWeight(3);
-  
   for (Contour contour : contours) {
-    stroke(0, 255, 0);
+    stroke(120, 100, 100);
     contour.draw();
   }
   
   image(opencv.getInput(), 0*width/4, 3*height/4, width/4,height/4);
-  image(opencv.getOutput(), 3*width/4, 3*height/4, width/4,height/4);
-  
+  image(bw, 3*width/4, 3*height/4, width/4,height/4);
 }
 
 /*
